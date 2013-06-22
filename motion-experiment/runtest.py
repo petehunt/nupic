@@ -30,7 +30,7 @@ from nupic.frameworks.opf.modelfactory import ModelFactory
 
 import model_params
 
-DATA_PATH = "../../motion-experiment/training.csv"
+DATA_PATH = "../../motion-experiment/test.csv"
 
 
 
@@ -41,7 +41,7 @@ def createModel():
 
 def runHotgym():
   model = createModel()
-  # model.disableLearning()
+  model.disableLearning()
   # model.saveModel()
   model.enableInference({'predictionSteps': [1, 5],
                          'predictedField': 'activity',
