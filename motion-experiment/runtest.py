@@ -31,22 +31,20 @@ from nupic.frameworks.opf.modelfactory import ModelFactory
 import model_params
 
 DATA_PATH = "../../motion-experiment/test.csv"
-
-
-
-def createModel():
-  return ModelFactory.create(model_params.MODEL_PARAMS)
-
-
+MODEL_PATH = '/vagrant/motion-experiment/model'
 
 def runHotgym():
-  model = createModel()
+  model = ModelFactory.loadFromCheckpoint(MODEL_PATH)
   model.disableLearning()
   # model.saveModel()
   model.enableInference({'predictionSteps': [1, 5],
                          'predictedField': 'activity',
                          'numRecords': 5397})
   print findDataset(DATA_PATH)
+
+  correct = 0
+  total = 0
+
   with open (findDataset(DATA_PATH)) as fin:
     reader = csv.reader(fin)
     headers = reader.next()
@@ -60,8 +58,10 @@ def runHotgym():
       #modelInput["ts"] = datetime.datetime.strptime(
       #    modelInput["ts"], "%Y-%m-%d %H:%M:%S.%f")
       result = model.run(modelInput)
-      print result
-  model.save('/vagrant/motion-experiment/model')
+      if result.inferences['multiStepBestPredictions'][1] == record[0]:
+          correct += 1
+      total += 1
+  print 'numenta stock price is:', float(correct)/total
 
 
 if __name__ == "__main__":
